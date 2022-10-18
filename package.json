@@ -1,0 +1,14 @@
+{
+  "name": "bof-nodejs",
+  "version": "1.0.0",
+  "description": "nodejs assignment",
+  "main": "index.js",
+  "author": "Andrea",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

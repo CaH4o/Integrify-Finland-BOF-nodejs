@@ -1,11 +1,13 @@
 # Requirement:
 
-## Step 1: create a server in server.js file using port 8000 or 5000
+1. create a http server using http module from nodejs in server.js file
 
-## Step 2: after creating the server, run your server by the script in the package.json file
+2. after creating the server, run your server by: `yarn start or npm start`
 
-## Step 3: create GET method to return a string "This is get method"
+3. The server should have the following spec:
 
-## Step 4: do the same with PUT,POST, DELETE method
-
-## Step 5: using GET method to get the data from user.json file
+   - `GET /msg`: return the content of `data.txt`
+   - `GET /users`: return the content of `user.json`
+   - `POST /`: add new user into `user.json`
+   - `PUT /:userId`: update the user by user Id
+   - `DELETE /:userId`: delete a user in `user.json`

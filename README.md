@@ -9,5 +9,5 @@
    - `GET /msg`: return the content of `data.txt`
    - `GET /users`: return the content of `user.json`
    - `POST /`: add new user into `user.json`
-   - `PUT /:userId`: update the user by user Id
+   - `PUT /:userId`: update the user by user id in `user.json`
    - `DELETE /:userId`: delete a user in `user.json`

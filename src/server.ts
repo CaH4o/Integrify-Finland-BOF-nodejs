@@ -4,6 +4,7 @@ import cors from "cors";
 import routeHome from "./routes/home";
 import routeMSG from "./routes/msg";
 import routeUsers from "./routes/users";
+import { errorResponse } from "./errors/errorsResponse";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use("", routeHome);
 app.use("/msg", routeMSG);
 app.use("/users", routeUsers);
 app.get("*", function (req, res) {
-  res.status(404).json({ message: "Page Not Found", statusCode: 404 });
+  res.status(404).send(errorResponse.page404);
 });
 
 try {

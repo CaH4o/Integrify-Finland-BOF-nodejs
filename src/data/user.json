@@ -1,1 +1,20 @@
-[{ "id": 1, "name": "Andrea", "age": 1, "address": "Helsinki" }, {"id":2,"name":"Oti","age":40,"address":"Äänekoski"}]
+[
+    {
+        "id": 1,
+        "name": "Andrea",
+        "age": 1,
+        "address": "Helsinki"
+    },
+    {
+        "id": 2,
+        "name": "Oti",
+        "age": 40,
+        "address": "Äänekoski"
+    },
+    {
+        "id": 3,
+        "name": "Meri",
+        "age": 25,
+        "address": "none"
+    }
+]

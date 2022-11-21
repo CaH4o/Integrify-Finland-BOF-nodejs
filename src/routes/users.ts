@@ -1,67 +1,73 @@
 import { Router } from "express";
 
 import { IUser } from "../types/tUser";
-import { getDataUsers, setDataUsers } from "../data/dataWorker";
+import { eError } from "../types/tError";
 import { errorResponse } from "../errors/errorsResponse";
+import { getUsers, getUser,  addUser, updateUser, initUser, deleteUser } from "../data/userWorker";
 
 const routeUsers: Router = Router();
 
 routeUsers.get("", function (req, res) {
-  const users: IUser[] = getDataUsers();
   const { limit, offset } = req.query;
   const o: number = offset ? Number(offset) : 0;
-  const l: number = limit ? Number(limit) : users.length;
+  const l: number = limit ? Number(limit) : 0;
 
   if (isNaN(o) || isNaN(l)) {
     return res.status(400).json(errorResponse.user400);
   }
-  if (users.length <= o || !l) {
-    return res.status(404).json(errorResponse.user404);
+
+  const users: IUser[] | eError = getUsers(o, l);
+  if (!Array.isArray(users)) {
+    return res
+      .status(errorResponse[users].error.status)
+      .json(errorResponse[users]);
   }
 
-  return res.status(200).json(users.slice(o, o + l));
+  return res.status(200).json(users);
 });
 
 routeUsers.get("/:userId", function (req, res) {
-  const users: IUser[] = getDataUsers();
   const id: number = Number(req.params.userId);
 
   if (isNaN(id)) {
     return res.status(400).json(errorResponse.user400);
   }
 
-  const i: number = users.findIndex((user: IUser) => user.id === id);
-  if (i === -1) {
-    return res.status(404).json(errorResponse.user404);
+  const user: IUser[] | eError = getUser(id);
+  if (!Array.isArray(user)) {
+    return res
+      .status(errorResponse[user].error.status)
+      .json(errorResponse[user]);
   }
 
-  return res.status(200).json(users.slice(i, i + 1));
+  return res.status(200).json(user);
 });
 
 routeUsers.post("", function (req, res) {
-  const users: IUser[] = getDataUsers();
   const { name, age, address }: IUser = req.body;
 
-  if (!name || !age || !address) {
+  // I decided the address is not required
+  if (!name || isNaN(age)) {
     return res.status(400).json(errorResponse.user400);
   }
-  if (users.find((user) => name === user.name)) {
-    return res.status(403).json(errorResponse.user403);
+  
+  const user: IUser = { ...initUser(), name };
+  user.age = Number(age);
+  if (address) {
+    user.address = address;
   }
 
-  const id: number = Math.max(...Object.values(users.map((u) => u.id))) + 1;
-  const user: IUser = { id, name, age, address };
-  users.push(user);
-
-  if (setDataUsers(users)) {
-    return res.status(503).json(errorResponse.server503);
+  const users: IUser[] | eError = addUser(user);
+  if (!Array.isArray(users)) {
+    return res
+      .status(errorResponse[users].error.status)
+      .json(errorResponse[users]);
   }
 
-  return res.status(201).json(user);
+  return res.status(201).json(users);
 });
 
 routeUsers.put("/:userId", function (req, res) {
-  const users: IUser[] = getDataUsers();
   const { name, age, address }: IUser = req.body;
   const id: number = Number(req.params.userId);
 
@@ -70,35 +76,33 @@ routeUsers.put("/:userId", function (req, res) {
     return res.status(400).json(errorResponse.user400);
   }
 
-  const i: number = users.findIndex((user: IUser) => user.id === id);
-  if (i === -1) {
-    return res.status(404).json(errorResponse.user404);
+  const user: IUser = { ...initUser(), id, name };
+  user.age = Number(age);
+  if (address) {
+    user.address = address;
   }
 
-  users[i] = address ? { id, name, age, address } : { ...users[i], name, age };
-  if (setDataUsers(users)) {
-    return res.status(503).json(errorResponse.server503);
+  const users: IUser[] | eError = updateUser(user);
+  if (!Array.isArray(users)) {
+    return res
+      .status(errorResponse[users].error.status)
+      .json(errorResponse[users]);
   }
 
-  return res.status(201).json(users[i]);
+  return res.status(201).json(users);
 });
 
 routeUsers.delete("/:id", function (req, res) {
-  const users: IUser[] = getDataUsers();
   const id: number = Number(req.params.id);
-
   if (isNaN(id)) {
     return res.status(400).json(errorResponse.user400);
   }
 
-  const i = users.findIndex((user: IUser) => user.id === id);
-  if (i === -1) {
-    return res.status(404).json(errorResponse.user404);
-  }
-
-  const user: IUser[] = users.splice(i, 1);
-  if (setDataUsers(users)) {
-    return res.status(503).json(errorResponse.server503);
+  const user: IUser[] | eError = deleteUser(id);
+  if (!Array.isArray(user)) {
+    return res
+      .status(errorResponse[user].error.status)
+      .json(errorResponse[user]);
   }
 
   return res.status(202).json(user);
